@@ -1,20 +1,21 @@
-#ifndef STRING_H
-#define STRING_H
+// strings.h
+#ifndef STRINGS_H
+#define STRINGS_H
 
 typedef struct {
-    int length;
-    int alloc;
-    char *data;
-    void (*append)(void* self, char ch);
-    void (*appends)(void* self, const char* s);
-    void (*assign)(void* self, const char* s);
-    void (*print)(void* self);
-    int (*len)(void* self);
-    char* (*str)(void* self);
+    char* data;
+    int len;
 } pystr;
 
-pystr* pystr_new();
-pystr* pystr_new_from(const char* s);
-void pystr_del(void* self);
+pystr* pystr_new_from(char* s);
+void pystr_del(pystr* s);
+void pystr_print(pystr* s);
+
+void pystr_append(void* self, char ch);
+void pystr_appends(void* self, const char* s);
+void pystr_assign(void* self, const char* s);
+void pystr_append_char(pystr* s, char c);
+int pystr_len(pystr* self);
+
 
 #endif

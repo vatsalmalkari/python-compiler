@@ -18,7 +18,9 @@ struct Map {
     int  (*size)(struct Map *self);
     void (*dump)(struct Map *self);
     void (*del)(struct Map *self);
+
 };
+int map_len(struct Map* m);
 
 struct Map *Map_new();
 

@@ -1,33 +1,28 @@
+// pydict.h
 #ifndef PYDICT_H
 #define PYDICT_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+typedef struct {
+    char key[50];
+    int value;
+} dict_entry;
 
-typedef  struct pydict pydict;
-typedef  struct dnode dnode;
+typedef struct {
+    dict_entry* items;
+    int size;
+    int capacity;
+} pydict;
 
+pydict* pydict_new();
+void pydict_del(pydict* d);
+void pydict_set(pydict* d, const char* key, int val);
+int pydict_get(pydict* d, const char* key);
+void pydict_print(pydict* d);
 
-struct dnode {
-    char *key;
-    char *value;
-    struct dnode *next;
-};
+int pydict_len(pydict* d);
+void pydict_put(pydict* d, const char* key, const char* value);
+void pydict_dump(pydict* d);
+int pydict_size(pydict* d);
 
-struct pydict {
-    struct dnode *head;
-    struct dnode *tail;
-    int count;
-};
-
-// Function declarations
-struct pydict* pydict_new();
-void pydict_put(struct pydict* self, const char* key, const char* value);
-char* pydict_get(struct pydict* self, const char* key, const char* default_value);
-int pydict_len(struct pydict* self);
-void pydict_print(struct pydict* self);
-void pydict_del(struct pydict* self);
-struct dnode* pydict_find(struct pydict* self, const char* key);
 
 #endif

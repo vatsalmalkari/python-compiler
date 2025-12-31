@@ -18,7 +18,14 @@ void __Map_put(struct Map *self, const char *key, int value) {
     }
     
     struct MapEntry *new_entry = malloc(sizeof(struct MapEntry));
-    new_entry->key = strdup(key);  
+    if (!new_entry) {
+         perror("malloc failed"); exit(1); 
+        }
+    new_entry->key = strdup(key);
+    if (!new_entry->key) { 
+        perror("strdup failed"); exit(1); 
+    }
+
     new_entry->value = value;
     new_entry->__prev = self->__tail;
     new_entry->__next = NULL;
@@ -67,6 +74,10 @@ void __Map_del(struct Map *self) {
         current = next;
     }
     free(self);  
+}
+int map_len(struct Map* m){
+    if(!m || !m->size) return 0;
+    return m->size(m);
 }
 
 struct Map *Map_new() {

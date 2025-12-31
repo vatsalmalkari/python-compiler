@@ -1,76 +1,58 @@
+// strings.c
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <math.h>
 #include "strings.h"
 
+pystr* pystr_new_from(char* s) {
+    pystr* p = malloc(sizeof(pystr));
+    p->len = strlen(s);
+    p->data = malloc(p->len + 1);
+    strcpy(p->data, s);
+    return p;
+}
+
+void pystr_del(pystr* s) {
+    if (!s) return;
+    free(s->data);
+    free(s);
+}
+
+void pystr_print(pystr* s) {
+    if (!s) return;
+    printf("%s\n", s->data);
+}
 void pystr_append(void* self, char ch) {
-    pystr* ps = (pystr*)self;
-    if (ps->length + 2 > ps->alloc) {
-        ps->alloc += 10;
-        ps->data = realloc(ps->data, ps->alloc);
-    }
-    ps->data[ps->length] = ch;
-    ps->length++;
-    ps->data[ps->length] = '\0';
+    pystr* s = (pystr*)self;
+    size_t len = strlen(s->data);
+    s->data = realloc(s->data, len + 2);
+    s->data[len] = ch;
+    s->data[len + 1] = '\0';
 }
 
-void pystr_appends(void* self, const char* s) {
-    pystr* ps = (pystr*)self;
-    for (int i = 0; s[i] != '\0'; i++) {
-        pystr_append(ps, s[i]);
-    }
+void pystr_appends(void* self, const char* str) {
+    pystr* s = (pystr*)self;
+    size_t len1 = strlen(s->data);
+    size_t len2 = strlen(str);
+    s->data = realloc(s->data, len1 + len2 + 1);
+    strcpy(s->data + len1, str);
 }
 
-void pystr_assign(void* self, const char* s) {
-    pystr* ps = (pystr*)self;
-    ps->length = 0;
-    ps->data[0] = '\0';
-    pystr_appends(ps, s);
+void pystr_append_char(pystr* s, char c) {
+    if (!s) return;
+    s->len++;
+    s->data = realloc(s->data, s->len + 2);
+    s->data[s->len] = c; 
+    s->len++;
+    s->data[s->len] = '\0';
 }
 
-void pystr_print(void* self) {
-    pystr* ps = (pystr*)self;
-    printf("\"%s\"\n", ps->data);
+void pystr_assign(void* self, const char* str) {
+    pystr* s = (pystr*)self;
+    free(s->data);
+    s->data = strdup(str);
 }
 
-int pystr_len(void* self) {
-    pystr* ps = (pystr*)self;
-    return ps->length;
-}
-
-char* pystr_str(void* self) {
-    pystr* ps = (pystr*)self;
-    return ps->data;
-}
-
-// Constructor
-pystr* pystr_new() {
-    pystr* ps = malloc(sizeof(pystr));
-    ps->length = 0;
-    ps->alloc = 10;
-    ps->data = malloc(ps->alloc);
-    ps->data[0] = '\0';
-    
-    // Connect method pointers
-    ps->append = pystr_append;
-    ps->appends = pystr_appends;
-    ps->assign = pystr_assign;
-    ps->print = pystr_print;
-    ps->len = pystr_len;
-    ps->str = pystr_str;
-    
-    return ps;
-}
-
-pystr* pystr_new_from(const char* s) {
-    pystr* ps = pystr_new();
-    pystr_appends(ps, s);
-    return ps;
-}
-
-void pystr_del(void* self) {
-    pystr* ps = (pystr*)self;
-    free(ps->data);
-    free(ps);
+int pystr_len(pystr* s){ 
+    return strlen(s->data); 
 }

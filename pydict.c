@@ -1,85 +1,74 @@
+// pydict.c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "pydict.h"
 
-struct pydict* pydict_new() {
-    struct pydict *p = malloc(sizeof(struct pydict));
-    p->head = NULL;
-    p->tail = NULL;
-    p->count = 0;
-    return p;
+pydict* pydict_new() {
+    pydict* d = malloc(sizeof(pydict));
+    d->size = 0;
+    d->capacity = 4;
+    d->items = malloc(sizeof(dict_entry)*d->capacity);
+    return d;
 }
 
-struct dnode* pydict_find(struct pydict* self, const char* key) {
-    struct dnode *cur = self->head;
-    while (cur != NULL) {
-        if (strcmp(cur->key, key) == 0) {
-            return cur;
-        }
-        cur = cur->next;
+void pydict_del(pydict* d) {
+    if(!d) return;
+    free(d->items);
+    free(d);
+}
+
+void pydict_set(pydict* d, const char* key, int val) {
+    for(int i=0;i<d->size;i++){
+        if(strcmp(d->items[i].key,key)==0){ d->items[i].value=val; return; }
     }
-    return NULL;
-}
-
-void pydict_put(struct pydict* self, const char* key, const char* value) {
-    struct dnode *existing = pydict_find(self, key);
-    if (existing != NULL) {
-
-        free(existing->value);
-        existing->value = malloc(strlen(value) + 1);
-        strcpy(existing->value, value);
-        return;
+    if(d->size>=d->capacity){
+        d->capacity*=2;
+        d->items=realloc(d->items,sizeof(dict_entry)*d->capacity);
     }
+    strcpy(d->items[d->size].key,key);
+    d->items[d->size].value=val;
+    d->size++;
+}
 
-    // Create new node
-    struct dnode *node = malloc(sizeof(struct dnode));
-    node->key = malloc(strlen(key) + 1);
-    node->value = malloc(strlen(value) + 1);
-    strcpy(node->key, key);
-    strcpy(node->value, value);
-    node->next = NULL;
-
-    // Append to list
-    if (self->head == NULL) {
-        self->head = node;
-        self->tail = node;
-    } else {
-        self->tail->next = node;
-        self->tail = node;
+int pydict_get(pydict* d, const char* key) {
+    for(int i=0;i<d->size;i++){
+        if(strcmp(d->items[i].key,key)==0) return d->items[i].value;
     }
-
-    self->count++;
+    return 0;
 }
 
-char* pydict_get(struct pydict* self, const char* key, const char* default_value) {
-    struct dnode *found = pydict_find(self, key);
-    if (found != NULL) {
-        return found->value;
-    }
-    return (char*)default_value;
-}
-
-int pydict_len(struct pydict* self) {
-    return self->count;
-}
-
-void pydict_print(struct pydict* self) {
+void pydict_print(pydict* d) {
     printf("{");
-    struct dnode *cur = self->head;
-    while (cur != NULL) {
-        printf("'%s': '%s'", cur->key, cur->value);
-        if (cur->next != NULL) printf(", ");
-        cur = cur->next;
+    for(int i=0;i<d->size;i++){
+        printf("\"%s\": %d", d->items[i].key, d->items[i].value);
+        if(i<d->size-1) printf(", ");
     }
     printf("}\n");
 }
-
-void pydict_del(struct pydict* self) {
-    struct dnode *cur = self->head;
-    while (cur != NULL) {
-        struct dnode *next = cur->next;
-        free(cur->key);
-        free(cur->value);
-        free(cur);
-        cur = next;
+int pydict_len(pydict* d) {
+    return d->size;
+}   
+void pydict_put(pydict* d, const char* key, const char* value) {
+    for(int i=0;i<d->size;i++){
+        if(strcmp(d->items[i].key,key)==0){
+            d->items[i].value = atoi(value);
+            return;
+        }
     }
-    free(self);
+    if(d->size>=d->capacity){
+        d->capacity*=2;
+        d->items=realloc(d->items,sizeof(dict_entry)*d->capacity);
+    }
+    strcpy(d->items[d->size].key,key);
+    d->items[d->size].value=atoi(value);
+    d->size++;
+}
+void pydict_dump(pydict* d) {
+    for(int i=0;i<d->size;i++){
+        printf("%s: %d\n", d->items[i].key, d->items[i].value);
+    }
+}
+int pydict_size(pydict* d) {
+    return d->size;
 }
