@@ -1,0 +1,10 @@
+tests/test_*
+*.o
+*.exe
+*.out
+build/
+dist/
+__pycache__/
+*.egg-info/
+*.vscode/
+*.DS_Store

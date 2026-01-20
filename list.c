@@ -1,61 +1,63 @@
-// list.c
-#include <stdio.h>
+#include "include/list.h"
 #include <stdlib.h>
-#include "list.h"
+#include <stdio.h>
 
 pylist* pylist_new() {
     pylist* l = malloc(sizeof(pylist));
     l->size = 0;
     l->capacity = 4;
-    l->items = malloc(sizeof(int) * l->capacity);
+    l->items = malloc(sizeof(PyObject*) * l->capacity);
     return l;
 }
 
 void pylist_del(pylist* l) {
     if (!l) return;
+
+    for (int i = 0; i < l->size; i++) {
+        py_decref(l->items[i]);
+    }
+
     free(l->items);
     free(l);
 }
 
-void pylist_append(pylist* l, int val) {
-    if (!l) return;
+void pylist_append(pylist* l, PyObject* obj) {
+    if (!l || !obj) return;
+
     if (l->size >= l->capacity) {
-        l->capacity = (l->capacity == 0) ? 4 : l->capacity * 2;
-        int* temp = realloc(l->items, sizeof(int) * l->capacity);
-        if (temp == NULL) {
-            fprintf(stderr, "Memory allocation failed\n");
-            return; 
-        }
-        l->items = temp;
+        l->capacity *= 2;
+        l->items = realloc(l->items, sizeof(PyObject*) * l->capacity);
     }
-    l->items[l->size] = val;
-    l->size++;
+
+    py_incref(obj);
+    l->items[l->size++] = obj;
+}
+
+PyObject* pylist_get(pylist* l, int index) {
+    if (!l || index < 0 || index >= l->size)
+        return py_none();
+    return l->items[index];
+}
+
+void pylist_set(pylist* l, int index, PyObject* obj) {
+    if (!l || index < 0 || index >= l->size || !obj) return;
+
+    py_decref(l->items[index]);
+    py_incref(obj);
+    l->items[index] = obj;
 }
 
 int pylist_len(pylist* l) {
-    return l->size;
+    return l ? l->size : 0;
 }
 
 void pylist_print(pylist* l) {
     if (!l) return;
+
     printf("[");
     for (int i = 0; i < l->size; i++) {
-        printf("%d", l->items[i]);
-        if (i < l->size-1) printf(", ");
+        if (i > 0) printf(", ");
+        pyobject_print(l->items[i]);
     }
     printf("]\n");
-}
-void pylist_set(pylist* l, int index, int val) {
-    if (index < 0 || index >= l->size) return;
-    l->items[index] = val;
-}
-int pylist_get(pylist* l, int index) {
-    if (index < 0 || index >= l->size) return 0;
-    return l->items[index];
-}
-int pylist_index(pylist* l, int val) {
-    for (int i = 0; i < l->size; i++) {
-        if (l->items[i] == val) return i;
-    }
-    return -1;
 }
