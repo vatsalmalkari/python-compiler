@@ -1,4 +1,3 @@
-tests/test_*
 *.o
 *.exe
 *.out
