@@ -1,5 +1,3 @@
-Here is a **clean, polished, professional README** version of yours — more structured, clearer, and GitHub-ready, while preserving everything you built.
-
 ---
 
 # **Python-Style Interpreter in C (with Data Structures)**
