@@ -33,7 +33,7 @@ void pyobject_print(PyObject* obj) {
         case PY_NONE:
             printf("None");
             break;
-        case PY_STRING:
+        case PY_STR:
             printf("\"%s\"", (char*)obj->value);
             break;
         default:

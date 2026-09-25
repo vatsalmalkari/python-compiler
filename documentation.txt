@@ -1,0 +1,137 @@
+---
+
+# Project: C-Python Interpreter
+
+**Language:** C 
+
+**Architecture:** Modular Interpreter
+
+---
+
+## 1. Project Overview
+
+This project is a custom-built, lightweight interpreter that mimics Python's behavior. It allows users to write Python-like code (variables, math, lists, strings, and loops) in a terminal, which is then translated into low-level C operations.
+
+---
+
+## 2. Core Architecture (The "Department" Model)
+
+The system is split into three layers: **Data**, **Logic**, and **Interface**.
+
+### A. The Data Layer (How we store things)
+
+Every piece of data in this interpreter is wrapped in a "Box" called a `PyObject`.
+
+* **`pyobject.c/h`**: The base structure. It handles **Reference Counting** (tracking how many variables use a piece of data) to ensure memory is freed when no longer needed.
+* **`pyint.c/h`**: Handles integer numbers.
+* **`strings.c/h`**: Handles text. It manages a dynamic buffer that can grow if you append characters.
+* **`list.c/h`**: A dynamic array that can hold other `PyObject` pointers.
+
+### B. The Logic Layer (The Brain)
+
+* **`interpreter.c`**: This is the heart of the engine.
+* **Evaluation**: It parses math expressions (e.g., `5 + 2 * 3`) using a two-pass system to respect mathematical order of operations.
+* **Control Flow**: It handles `if` statements and `while`/`for` loops. It uses **Recursion** to handle indented blocks of code.
+* **Variable Registry**: It manages arrays that act as memory "lockers" for different types of variables (Strings, Lists, Integers).
+
+### C. The Interface Layer (The REPL)
+
+* **`main.c`**: This provides the Interactive Shell (REPL). It manages the `>>>` and `... ` prompts and detects indentation to determine when a block of code is finished and ready to be executed.
+
+---
+
+## 3. Memory Management (The Co-Op Perspective)
+
+To prevent "Memory Leaks" (a major issue in hardware/software systems), this project implements a **Reference Counting** system:
+
+1. When an object is created, its `refcount` is 1.
+2. If another variable points to it, we **increment** the count.
+3. When a variable is deleted or goes out of scope, we **decrement** the count.
+4. If the count hits 0, the C `free()` function is called automatically.
+
+---
+
+## 4. Compilation & Build System
+
+We use a **Makefile** to automate the build process. This ensures "Quality Control" by using flags like `-Wall` to catch errors before the software is released.
+
+* **To Build:** `make`
+* **To Clean:** `make clean`
+* **To Run:** `./my_python`
+
+---
+
+## 5. Technical Troubleshooting Guide
+
+Common issues and their resolutions during development:
+
+* **Linker Errors (Duplicate Symbols):** Caused by having the same function name in two different `.c` files. Resolved by consolidating code into modular files.
+* **Type Mismatch Warnings:** Resolved by using **Explicit Casting** (e.g., `(PyObject*)`), which is a form of manual polymorphism in C.
+* **Segmentation Faults:** Usually caused by dereferencing a `NULL` pointer. Resolved by adding safety checks (e.g., `if (!obj) return;`) in the data layer.
+
+---
+
+/include/          - Header files (interfaces)
+/tests/            - Test files (unit tests)
+/                  - Implementation files (.c)
+
+MAIN FILES:
+main.c             - REPL (interactive shell)
+interpreter.c      - Execution engine (core logic)
+
+DATA STRUCTURES:
+pystr.c            - String implementation
+list.c             - List implementation
+pydict.c           - Dictionary implementation
+map.c              - Map implementation
+queue.c            - Queue implementation
+stack.c            - Stack implementation
+pyint.c            - Integer wrapper
+pyobject.c         - Base object system
+
+UTILITIES:
+strings.c          - String utilities
+typesystem.c       - Type system
+security.c         - Security checks
+
+COMPILATION:
+make              - Compile interpreter
+make run          - Run interpreter
+make test_all     - Run all tests
+make clean        - Remove build files
+
+TESTING:
+make test_expr    - Test expressions
+make test_ctrl    - Test control flow
+make test_str     - Test strings
+make test_list    - Test lists
+make test_all     - Run all tests
+
+WITH MEMORY CHECKING:
+make interpreter_sanitize
+./interpreter_sanitize
+(Any memory errors are caught and reported)
+
+CODE QUALITY:
+Compiled with:
+  -Wall           (all warnings)
+  -Wextra         (extra warnings)
+  -g              (debug symbols)
+  -fsanitize=address (AddressSanitizer)
+
+# Build and run interpreter
+make run
+
+# Build with memory checking
+make sanitize
+
+# Run all tests
+make test_all
+
+# Build specific test
+make test_expr
+./test_expr
+
+# Clean up
+make clean
+---

@@ -19,5 +19,6 @@ int main() {
         "print(S)\n";
 
     execute_statements(script);
+    test_security();
     return 0;
 }

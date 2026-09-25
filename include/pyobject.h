@@ -5,7 +5,9 @@ typedef enum {
     PY_INT,
     PY_STRING,
     PY_NONE,
-    PY_STR
+    PY_STR,
+    PY_LIST,
+    PY_DICT,
 } PyType;
 
 typedef struct PyObject {

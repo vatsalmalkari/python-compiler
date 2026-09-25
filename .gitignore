@@ -1,9 +1,28 @@
+# Compiled files
 *.o
-*.exe
-*.out
-build/
-dist/
-__pycache__/
-*.egg-info/
-*.vscode/
-*.DS_Store
+*.a
+*.so
+
+# Executables
+interpreter
+interpreter_sanitize
+test_expr
+test_ctrl
+test_str
+test_list
+test_map_dict
+test_stack_queue
+
+# Debug files
+*.dSYM/
+*.su
+*.gch
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store

@@ -1,11 +1,15 @@
 #ifndef INTERPRETER_H
 #define INTERPRETER_H
 
+#include "pyobject.h"
+#include <string.h>
+#include "pyint.h"
+#include "pystr.h"
 #include <stdio.h>
 #include "list.h"
 #include "strings.h"
 #include "pydict.h"
-#include "map.h"
+#include "typesystem.h"  
 
 #define MAX_VARS 26
 #define MAX_LINE 200
@@ -15,15 +19,8 @@
 #define MAX_MAP_VARS 10
 #define MAX_STR_VARS 26
 
-typedef struct {
-    char name;
-    int value;
-} Variable;
-
-extern Variable vars[MAX_VARS];
-extern int var_count;
-
-Variable* find_var(char name);
+TypedVariable* find_var(char name);
+TypedVariable* find_typed_var(char name);
 void set_var(char name, int value);
 int get_value(char* token);
 
@@ -51,4 +48,6 @@ int count_leading_spaces(char* line);
 void interpret(char* line);
 void execute_statements(char* stmts);
 
-#endif 
+void test_security();
+
+#endif

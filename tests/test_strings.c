@@ -41,6 +41,15 @@ int main() {
 
     pystr_del((PyObject*)s);
     pystr_del((PyObject*)empty);
+    
+    pystr* A = (pystr*)pystr_new_from("hello");
+    pystr* B = (pystr*)pystr_new_from("world");
+    pystr* C = (pystr*)pystr_concat((PyObject*)A, (PyObject*)B);
+    printf("C = A + B: "); pystr_print((PyObject*)C);
+    printf("Length: %d\n", pystr_len((PyObject*)C));
+    pystr_del((PyObject*)A);
+    pystr_del((PyObject*)B);
+    pystr_del((PyObject*)C);
     printf("Strings deleted successfully.\n");
 
     return 0;
