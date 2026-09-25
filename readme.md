@@ -517,13 +517,13 @@ gcc -fsanitize=address -o interpreter main.c ...
 
 ```bash
 # Division by zero
-a = 10 / 0  # Returns 0, doesn't crash ✅
+a = 10 / 0  # Returns 0, doesn't crash 
 
 # Unclosed string
-A = "hello  # Error message shown ✅
+A = "hello  # Error message shown 
 
 # Buffer overflow
-# Blocked by bounds checking ✅
+# Blocked by bounds checking
 ```
 
 ---
